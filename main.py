@@ -1,8 +1,9 @@
 from random import random
+from kivy.core.text import Label as CoreLabel
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
-from kivy.graphics import Color, Ellipse, Line
+from kivy.graphics import Color, Ellipse, Line, Rectangle
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
 from kivy import utils
@@ -12,6 +13,7 @@ from kivy.uix.togglebutton import ToggleButton
 from kivy.clock import Clock
 from itertools import cycle
 from functools import partial
+
 
 Window.clearcolor = (1, 1, 1, 1)
 erase_color = (1,1,1,1)
@@ -46,9 +48,16 @@ class KivyDraw(Widget):
 
         if touch.is_double_tap:
             self.draw_on_move = not self.draw_on_move
+            # mylabel = CoreLabel(text="Hi there!", font_size=25, color=(0, 0, 0, 0), position=(touch.x, touch.y))
+            # # Force refresh to compute things and generate the texture
+            # mylabel.refresh()
+            # # Get the texture and the texture size
+            # texture = mylabel.texture
+            # texture_size = list(texture.size)
             with self.canvas:
                 Color(*self.color)
                 self.line = Line(points=(touch.x, touch.y), width=width)
+                # Rectangle(pos=(touch.x, touch.y), texture=texture, size=texture_size)
         else:
             with self.canvas:
                 Color(*self.color)
