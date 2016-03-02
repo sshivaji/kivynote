@@ -9,6 +9,7 @@ from kivy.utils import get_color_from_hex
 from kivy import utils
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.togglebutton import ToggleButton
 from itertools import cycle
 
 
@@ -18,16 +19,14 @@ erase_color = (1,1,1,1)
 colors = [utils.hex_colormap['blue'], utils.hex_colormap['green'], utils.hex_colormap['red'], utils.hex_colormap['purple'], utils.hex_colormap['orange'], utils.hex_colormap['brown'], utils.hex_colormap['black']]
 color_cycle = cycle(colors)
 # print (utils.hex_colormap)
-current_color = None
+# current_color = None
 
 class KivyDraw(Widget):
     def __init__(self, **kwargs):
         super(KivyDraw, self).__init__(**kwargs)
-        global current_color
-        current_color = get_color_from_hex(color_cycle.next())
-        self.color = current_color
-        # self.color_index = 0
-    
+        # global current_color
+        self.color = get_color_from_hex(color_cycle.next())
+        self.previous_color = None
     def on_touch_down(self, touch):
         color = self.color
         width = 3
@@ -53,13 +52,13 @@ class KivyNoteBookApp(App):
         clearbtn = ColorButton(text='Clear', shorten=True, size_hint=(None,1))
         clearbtn.bind(on_release=self.clear_canvas)
        
-        erasebtn = ColorButton(text='Erase', shorten=True, size_hint=(None,1))
+        erasebtn = CustomToggleButton(text='Erase', shorten=True, size_hint=(None,1))
         erasebtn.bind(on_release=self.set_erase)
 
         colorbtn = ColorToggleButton(text='Color', shorten=True, size_hint=(None,1), painter = self.painter)
         colorbtn.bind(on_release=self.set_color)
 
-        savebtn = ColorToggleButton(text='Save', shorten=True, size_hint=(None,1), painter = self.painter)
+        savebtn = ColorButton(text='Save', shorten=True, size_hint=(None,1), painter = self.painter)
         savebtn.bind(on_release=self.save)
 
         layout = BoxLayout(orientation = 'vertical')
@@ -80,22 +79,27 @@ class KivyNoteBookApp(App):
     def clear_canvas(self, obj):
         self.painter.canvas.clear()
         color_cycle = cycle(colors)
-        global current_color
-        current_color = get_color_from_hex(color_cycle.next())
-        self.painter.color = current_color
+        # global current_color
+
+        self.painter.color = get_color_from_hex(color_cycle.next())
+        # self.painter.color = self.painter.current_color
 
     def set_color(self, obj):
         # self.painter.canvas.clear()
         # blue, green, red, purple, orange, brown, black
         # self.painter.color = colors
-        global current_color
-        current_color = get_color_from_hex(color_cycle.next())
-        self.painter.color = current_color
+        # global current_color
+        # current_color = get_color_from_hex(color_cycle.next())
+        self.painter.color = get_color_from_hex(color_cycle.next())
 
     def set_erase(self, obj):
         if self.painter.color == erase_color:
-            self.painter.color = get_color_from_hex('#000080')
-        self.painter.color = erase_color
+            self.painter.color = self.painter.previous_color
+            # self.painter.previous_color = self.painter.color
+            # self.painter.color = get_color_from_hex('#000080')
+        else:
+            self.painter.previous_color = self.painter.color
+            self.painter.color = erase_color
 
     def save(self, obj):
         pass
@@ -104,9 +108,17 @@ class KivyNoteBookApp(App):
 class ColorButton(Button):
     def __init__(self, **kwargs):
         super(ColorButton, self).__init__(**kwargs)
-        self.background_normal = ""
-        self.background_down = ""
-        self.background_color = get_color_from_hex('#000080')
+        # self.background_normal = ""
+        # self.background_down = ""
+        # self.background_color = get_color_from_hex('#000080')
+
+class CustomToggleButton(ToggleButton):
+    def __init__(self, **kwargs):
+        super(CustomToggleButton, self).__init__(**kwargs)
+        # self.background_normal = ""
+        # self.background_down = utils.hex_colormap['blue']
+        # self.background_color = get_color_from_hex('#000080')
+
 
 class ColorToggleButton(Button):
     def __init__(self, **kwargs):
@@ -124,7 +136,9 @@ class ColorToggleButton(Button):
        # self.background_color = self.background_color_normal
        # current_color = color_cycle.next()
        # print(current_color)
-       self.background_color = current_color
+       self.painter.color = get_color_from_hex(color_cycle.next())
+
+       self.background_color = self.painter.color
 
 if __name__ == '__main__':
     KivyNoteBookApp().run()
