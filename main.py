@@ -217,9 +217,9 @@ class ColorToggleButton(Button):
         self.background_down = ""
         self.background_color = get_color_from_hex('#000080')
 
-     def on_release(self):
-       self.painter.color = get_color_from_hex(color_cycle.next())
-       self.background_color = self.painter.color
+    def on_release(self):
+        self.painter.color = get_color_from_hex(color_cycle.next())
+        self.background_color = self.painter.color
 
 if __name__ == '__main__':
     KivyNoteBookApp().run()
