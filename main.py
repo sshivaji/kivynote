@@ -5,7 +5,7 @@ from kivy.uix.label import Label
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
-from kivy.graphics import Color, Ellipse, Line, Rectangle
+from kivy.graphics import Color, Ellipse, Line, Rectangle, RoundedRectangle
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
 from kivy import utils
@@ -111,8 +111,8 @@ class KivyNoteBookApp(App):
         clearbtn = ColorButton(text='Clear', shorten=True, size_hint=(None,1))
         clearbtn.bind(on_release=self.clear_canvas)
 
-        erasebtn = CustomToggleButton(text='Pen', default='Pen', down='Erase', shorten=True, size_hint=(None,1))
-        erasebtn.bind(on_release=self.set_erase)
+        self.erasebtn = CustomToggleButton(text='Erase', default='Erase', down='Erase', shorten=True, size_hint=(None,1))
+        self.erasebtn.bind(on_release=self.set_erase)
 
         self.colorbtn = ColorToggleButton(shorten=True, size_hint=(None, 1), painter = self.painter)
         self.colorbtn.bind(on_release=self.set_color)
@@ -131,7 +131,7 @@ class KivyNoteBookApp(App):
 
         button_layout = GridLayout(cols=6, spacing=5)
         button_layout.add_widget(clearbtn)
-        button_layout.add_widget(erasebtn)
+        button_layout.add_widget(self.erasebtn)
         button_layout.add_widget(savebtn)
         button_layout.add_widget(undo_btn)
         button_layout.add_widget(keyboard_btn)
@@ -151,7 +151,8 @@ class KivyNoteBookApp(App):
         self.painter.canvas.clear()
         color_cycle = cycle(colors)
         # global current_color
-
+        if self.painter.color == erase_color:
+            self.erasebtn.state = 'normal'
         self.painter.color = get_color_from_hex(color_cycle.next())
         self.colorbtn.background_color = self.painter.color
         # self.set_color()
@@ -184,14 +185,14 @@ class ColorButton(Button):
 class CustomToggleButton(ToggleButton):
     def __init__(self, **kwargs):
         super(CustomToggleButton, self).__init__(**kwargs)
-        self.down = kwargs['down']
-        self.default = kwargs['default']
+        # self.down = kwargs['down']
+        # self.default = kwargs['default']
 
-    def on_press(self):
-        if self.state == 'down':
-            self.text = self.down
-        else:
-            self.text = self.default
+    # def on_press(self):
+    #     if self.state == 'down':
+    #         self.text = self.down
+    #     else:
+    #         self.text = self.default
 
 class ColorToggleButton(Button):
     def __init__(self, **kwargs):
