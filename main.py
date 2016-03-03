@@ -26,26 +26,6 @@ erase_color = (1,1,1,1)
 colors = [utils.hex_colormap['blue'], utils.hex_colormap['green'], utils.hex_colormap['red'], utils.hex_colormap['purple'], utils.hex_colormap['orange'], utils.hex_colormap['brown'], utils.hex_colormap['black']]
 color_cycle = cycle(colors)
 
-class MyPopup(Popup):
-    def show_popup(self):
-        mytext= ""
-
-        content = BoxLayout(orientation="vertical")
-
-        content.add_widget(Label(text=mytext, font_size=20))
-
-        mybutton = Button(text="Got It!", size_hint=(1,.20), font_size=20)
-        content.add_widget(mybutton)
-
-        mypopup = Popup(content = content,
-                title = "Including Itens",
-                auto_dismiss = False,
-                size_hint = (.7, .5),
-                font_size = 20)
-        mybutton.bind(on_press=mypopup.dismiss)
-        mypopup.open()
-
-
 class KivyDraw(Widget):
     def __init__(self, **kwargs):
         super(KivyDraw, self).__init__(**kwargs)
@@ -82,20 +62,25 @@ class KivyDraw(Widget):
                 self.line = Line(points=(touch.x, touch.y), width=width)
                 # Rectangle(pos=(touch.x, touch.y), texture=texture, size=texture_size)
         elif self.keyboard_mode:
+            def on_popup_parent(popup):
+                if popup:
+                    popup.content.focus = True
+
             def set_caption(t):
                 print(t.content.text)
-                mylabel = CoreLabel(text=t.content.text, font_size=25, color=self.color, position=(Window.mouse_pos[0], Window.mouse_pos[1]))
+                mylabel = CoreLabel(text=t.content.text, font_size=25, color=self.color, position=(touch.x, touch.y))
                 # Force refresh to compute things and generate the texture
                 mylabel.refresh()
                 texture = mylabel.texture
                 texture_size = list(texture.size)
                 with self.canvas:
-                    Rectangle(pos=(touch.x, touch.y), texture=texture, size=texture_size)
+                    self.history.append(Rectangle(pos=(touch.x, touch.y), texture=texture, size=texture_size))
 
+                # textinput = TextInput(text='Hello world', color=self.color, font_size=100, multiline=False, focus=False, pos=(touch.x, touch.y))
             Popup(title="Enter text here",
-              content=TextInput(text='', focus=False, multiline=False),
+              content=TextInput(text='', multiline=True),
               size_hint=(0.6, 0.6),
-              on_dismiss=set_caption).open()
+              on_dismiss=set_caption, on_open=on_popup_parent).open()
         else:
             with self.canvas:
                 Color(*self.color)
@@ -105,8 +90,8 @@ class KivyDraw(Widget):
 
     def on_touch_move(self, touch):
         super(KivyDraw, self).on_touch_move(touch)
-
-        touch.ud['line'].points += [touch.x, touch.y]
+        if not self.keyboard_mode:
+            touch.ud['line'].points += [touch.x, touch.y]
         # self.history = touch.ud['line']
 
 class KivyNoteBookApp(App):
