@@ -58,45 +58,6 @@ class KivyDraw(Widget):
         self.line = None
         self.history = []
 
-    def _keyboard_closed(self):
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        print (keycode)
-        print (text)
-        print (keyboard)
-        mylabel = CoreLabel(text=text, font_size=12, color=self.color, position=(Window.mouse_pos[0], Window.mouse_pos[1]))
-        # Force refresh to compute things and generate the texture
-        mylabel.refresh()
-        # Get the texture and the texture size
-        texture = mylabel.texture
-        texture_size = list(texture.size)
-        # mypopup = MyPopup()
-
-        def set_caption(s):
-            input_text = s
-        # mypopup.show_popup()
-        # self._keyboard_closed()
-        # Popup(title="Enter text here",
-        #       content=TextInput(focus=True),
-        #       size_hint=(0.6, 0.6),
-        #       on_dismiss=set_caption).open()
-
-        # self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        # self._keyboard.bind(on_key_down=self._on_keyboard_down)
-        # with self.canvas:
-        #     Color(*self.color)
-        #     # popup = Popup(title='Test popup', content=Label(text='Hello world'))
-        #     # popup.open()
-        mypopup = MyPopup()
-
-        mypopup.show_popup()
-            # self.line = Line(points=(touch.x, touch.y), width=width)
-            # Rectangle(pos=(Window.mouse_pos[0], Window.mouse_pos[1]), texture=texture, size=texture_size)
-            # TextInput(focus=True, markup=True, text='Hello', font_size=25, multiline=False, pos=(Window.mouse_pos[0], Window.mouse_pos[1]))
-        # return True
-
     def on_motion(self, dt):
         # super(KivyDraw, self).on_motion(touch)
 
@@ -131,14 +92,25 @@ class KivyDraw(Widget):
         elif self.keyboard_mode:
             def set_caption(t):
                 print(t.content.text)
-                # pass
-            # print("caught")
-            # super(KivyDraw, self).on_touch_down(touch)
+                # mylabel.text = t.content.text
+                # mylabel.refresh()
+                mylabel = CoreLabel(text=t.content.text, font_size=25, color=self.color, position=(Window.mouse_pos[0], Window.mouse_pos[1]))
+                # Force refresh to compute things and generate the texture
+                mylabel.refresh()
+                texture = mylabel.texture
+                texture_size = list(texture.size)
+                with self.canvas:
+                    # print (texture.text)
+                    Rectangle(pos=(touch.x, touch.y), texture=texture, size=texture_size)
+
+
+            # Get the texture and the texture size
+
             Popup(title="Enter text here",
-              content=TextInput(text='', focus=False, multiline=True),
+              content=TextInput(text='', focus=False, multiline=False),
               size_hint=(0.6, 0.6),
               on_dismiss=set_caption).open()
-            # return
+
 
 
 
