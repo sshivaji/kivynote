@@ -25,8 +25,6 @@ erase_color = (1,1,1,1)
 
 colors = [utils.hex_colormap['blue'], utils.hex_colormap['green'], utils.hex_colormap['red'], utils.hex_colormap['purple'], utils.hex_colormap['orange'], utils.hex_colormap['brown'], utils.hex_colormap['black']]
 color_cycle = cycle(colors)
-# print (utils.hex_colormap)
-# current_color = None
 
 class MyPopup(Popup):
     def show_popup(self):
@@ -79,12 +77,6 @@ class KivyDraw(Widget):
 
         if touch.is_double_tap:
             self.draw_on_move = not self.draw_on_move
-            # mylabel = CoreLabel(text="Hi there!", font_size=25, color=(0, 0, 0, 0), position=(touch.x, touch.y))
-            # # Force refresh to compute things and generate the texture
-            # mylabel.refresh()
-            # # Get the texture and the texture size
-            # texture = mylabel.texture
-            # texture_size = list(texture.size)
             with self.canvas:
                 Color(*self.color)
                 self.line = Line(points=(touch.x, touch.y), width=width)
@@ -92,31 +84,18 @@ class KivyDraw(Widget):
         elif self.keyboard_mode:
             def set_caption(t):
                 print(t.content.text)
-                # mylabel.text = t.content.text
-                # mylabel.refresh()
                 mylabel = CoreLabel(text=t.content.text, font_size=25, color=self.color, position=(Window.mouse_pos[0], Window.mouse_pos[1]))
                 # Force refresh to compute things and generate the texture
                 mylabel.refresh()
                 texture = mylabel.texture
                 texture_size = list(texture.size)
                 with self.canvas:
-                    # print (texture.text)
                     Rectangle(pos=(touch.x, touch.y), texture=texture, size=texture_size)
-
-
-            # Get the texture and the texture size
 
             Popup(title="Enter text here",
               content=TextInput(text='', focus=False, multiline=False),
               size_hint=(0.6, 0.6),
               on_dismiss=set_caption).open()
-
-
-
-
-            # mypopup = MyPopup()
-            # mypopup.show_popup()
-
         else:
             with self.canvas:
                 Color(*self.color)
@@ -200,18 +179,11 @@ class KivyNoteBookApp(App):
                 self.painter.canvas.remove(el)
 
     def set_color(self, obj):
-        # self.painter.canvas.clear()
-        # blue, green, red, purple, orange, brown, black
-        # self.painter.color = colors
-        # global current_color
-        # current_color = get_color_from_hex(color_cycle.next())
         self.painter.color = get_color_from_hex(color_cycle.next())
 
     def set_erase(self, obj):
         if self.painter.color == erase_color:
             self.painter.color = self.painter.previous_color
-            # self.painter.previous_color = self.painter.color
-            # self.painter.color = get_color_from_hex('#000080')
         else:
             self.painter.previous_color = self.painter.color
             self.painter.color = erase_color
@@ -223,9 +195,6 @@ class KivyNoteBookApp(App):
 class ColorButton(Button):
     def __init__(self, **kwargs):
         super(ColorButton, self).__init__(**kwargs)
-        # self.background_normal = ""
-        # self.background_down = ""
-        # self.background_color = get_color_from_hex('#000080')
 
 class CustomToggleButton(ToggleButton):
     def __init__(self, **kwargs):
@@ -248,13 +217,7 @@ class ColorToggleButton(Button):
         self.background_down = ""
         self.background_color = get_color_from_hex('#000080')
 
-   # def on_press(self):
-       # self.background_color = self.background_color_down
-
-    def on_release(self):
-       # self.background_color = self.background_color_normal
-       # current_color = color_cycle.next()
-       # print(current_color)
+     def on_release(self):
        self.painter.color = get_color_from_hex(color_cycle.next())
        self.background_color = self.painter.color
 
