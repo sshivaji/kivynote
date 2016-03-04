@@ -15,6 +15,8 @@ from kivy.uix.togglebutton import ToggleButton
 from kivy.clock import Clock
 from kivy.uix.textinput import TextInput
 from kivy.uix.popup import Popup
+from kivy.utils import platform
+
 
 from itertools import cycle
 from functools import partial
@@ -23,7 +25,17 @@ from functools import partial
 Window.clearcolor = (1, 1, 1, 1)
 erase_color = (1,1,1,1)
 
-colors = [utils.hex_colormap['blue'], utils.hex_colormap['black'], utils.hex_colormap['green'], utils.hex_colormap['red'], utils.hex_colormap['purple'], utils.hex_colormap['orange'], utils.hex_colormap['brown']]
+colors = [utils.hex_colormap['black'], utils.hex_colormap['blue'], utils.hex_colormap['green'], utils.hex_colormap['red'], utils.hex_colormap['purple'], utils.hex_colormap['yellow'], utils.hex_colormap['orange'], utils.hex_colormap['brown']]
+
+def is_desktop():
+    """
+    Detect if we are running on the desktop or not
+    :return: boolean True if running on a desktop platform or String platform
+    """
+    if platform in ('linux', 'windows', 'macosx'):
+        return True
+    else:
+        return False
 
 class KivyDraw(Widget):
     def __init__(self, app, **kwargs):
@@ -56,7 +68,7 @@ class KivyDraw(Widget):
         # Make eraser color larger
         width = 10 if self.color == erase_color else 3
 
-        if touch.is_double_tap:
+        if touch.is_double_tap and is_desktop():
             self.draw_on_move = not self.draw_on_move
             with self.canvas:
                 Color(*self.color)
@@ -109,7 +121,8 @@ class KivyNoteBookApp(App):
 
         # self.painter._keyboard = Window.request_keyboard(self.painter._keyboard_closed, self)
         # self.painter._keyboard.bind(on_key_down=self.painter._on_keyboard_down)
-        Clock.schedule_interval(partial(self.painter.on_motion), 0.05)
+        if is_desktop():
+            Clock.schedule_interval(partial(self.painter.on_motion), 0.05)
 
         clearbtn = ColorButton(text='Clear', shorten=True, size_hint=(None,1))
         clearbtn.bind(on_release=self.clear_canvas)
@@ -204,7 +217,7 @@ class ColorToggleButton(Button):
         # print(self.painter)
         self.background_normal = ""
         self.background_down = ""
-        self.background_color = get_color_from_hex('#000080')
+        self.background_color = self.painter.color
 
     def on_release(self):
         #self.painter.color = get_color_from_hex(self.painter.color_cycle.next())
