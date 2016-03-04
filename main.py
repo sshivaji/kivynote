@@ -23,14 +23,14 @@ from functools import partial
 Window.clearcolor = (1, 1, 1, 1)
 erase_color = (1,1,1,1)
 
-colors = [utils.hex_colormap['blue'], utils.hex_colormap['green'], utils.hex_colormap['red'], utils.hex_colormap['purple'], utils.hex_colormap['orange'], utils.hex_colormap['brown'], utils.hex_colormap['black']]
-color_cycle = cycle(colors)
+colors = [utils.hex_colormap['blue'], utils.hex_colormap['black'], utils.hex_colormap['green'], utils.hex_colormap['red'], utils.hex_colormap['purple'], utils.hex_colormap['orange'], utils.hex_colormap['brown']]
 
 class KivyDraw(Widget):
     def __init__(self, **kwargs):
         super(KivyDraw, self).__init__(**kwargs)
         # global current_color
-        self.color = get_color_from_hex(color_cycle.next())
+        self.color_cycle = cycle(colors)
+        self.color = get_color_from_hex(self.color_cycle.next())
         self.previous_color = None
         self.draw_on_move = False
         self.line = None
@@ -149,11 +149,11 @@ class KivyNoteBookApp(App):
 
     def clear_canvas(self, obj):
         self.painter.canvas.clear()
-        color_cycle = cycle(colors)
+        self.painter.color_cycle = cycle(colors)
         # global current_color
         if self.painter.color == erase_color:
             self.erasebtn.state = 'normal'
-        self.painter.color = get_color_from_hex(color_cycle.next())
+        self.painter.color = get_color_from_hex(self.painter.color_cycle.next())
         self.colorbtn.background_color = self.painter.color
         # self.set_color()
         # self.painter.color = self.painter.current_color
@@ -165,7 +165,7 @@ class KivyNoteBookApp(App):
                 self.painter.canvas.remove(el)
 
     def set_color(self, obj):
-        self.painter.color = get_color_from_hex(color_cycle.next())
+        self.painter.color = get_color_from_hex(self.painter.color_cycle.next())
 
     def set_erase(self, obj):
         if self.painter.color == erase_color:
@@ -204,7 +204,7 @@ class ColorToggleButton(Button):
         self.background_color = get_color_from_hex('#000080')
 
     def on_release(self):
-        self.painter.color = get_color_from_hex(color_cycle.next())
+        #self.painter.color = get_color_from_hex(self.painter.color_cycle.next())
         self.background_color = self.painter.color
 
 if __name__ == '__main__':
