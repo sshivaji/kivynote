@@ -26,9 +26,10 @@ erase_color = (1,1,1,1)
 colors = [utils.hex_colormap['blue'], utils.hex_colormap['black'], utils.hex_colormap['green'], utils.hex_colormap['red'], utils.hex_colormap['purple'], utils.hex_colormap['orange'], utils.hex_colormap['brown']]
 
 class KivyDraw(Widget):
-    def __init__(self, **kwargs):
+    def __init__(self, app, **kwargs):
         super(KivyDraw, self).__init__(**kwargs)
         # global current_color
+        self._app = app
         self.color_cycle = cycle(colors)
         self.color = get_color_from_hex(self.color_cycle.next())
         self.previous_color = None
@@ -81,6 +82,8 @@ class KivyDraw(Widget):
               content=TextInput(text='', multiline=True),
               size_hint=(0.6, 0.6),
               on_dismiss=set_caption, on_open=on_popup_parent).open()
+	    self._app.keyboard_btn.state = 'normal'
+            self.keyboard_mode = False
         else:
             with self.canvas:
                 Color(*self.color)
@@ -101,7 +104,7 @@ class KivyNoteBookApp(App):
     def build(self):
         self.y = None
         parent = Widget()
-        self.painter = KivyDraw()
+        self.painter = KivyDraw(self)
         self.painter.keyboard_mode = False
 
         # self.painter._keyboard = Window.request_keyboard(self.painter._keyboard_closed, self)
@@ -123,8 +126,8 @@ class KivyNoteBookApp(App):
         savebtn = ColorButton(text='Save', shorten=True, size_hint=(None, 1), painter = self.painter)
         savebtn.bind(on_release=self.save)
 
-        keyboard_btn = CustomToggleButton(text='T', default='T', down='T', shorten=True, size_hint=(None, 1), painter = self.painter)
-        keyboard_btn.bind(on_release=self.keyboard_input)
+        self.keyboard_btn = CustomToggleButton(text='T', default='T', down='T', shorten=True, size_hint=(None, 1), painter = self.painter)
+        self.keyboard_btn.bind(on_release=self.keyboard_input)
 
         layout = BoxLayout(orientation = 'vertical')
         layout.add_widget(self.painter)
@@ -134,7 +137,7 @@ class KivyNoteBookApp(App):
         button_layout.add_widget(self.erasebtn)
         button_layout.add_widget(savebtn)
         button_layout.add_widget(undo_btn)
-        button_layout.add_widget(keyboard_btn)
+        button_layout.add_widget(self.keyboard_btn)
 
         button_layout.add_widget(self.colorbtn)
 
