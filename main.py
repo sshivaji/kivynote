@@ -113,6 +113,14 @@ class KivyNoteBookApp(App):
     def to_window(self, x, y):
         return [100,100]
 
+    def on_pause(self):
+      # Here you can save data if needed
+      return True
+
+    def on_resume(self):
+      # Here you can check if any data needs replacing (usually nothing)
+      pass
+
     def build(self):
         self.y = None
         parent = Widget()
