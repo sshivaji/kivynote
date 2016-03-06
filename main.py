@@ -189,6 +189,8 @@ class KivyNoteBookApp(App):
                 self.painter.canvas.remove(el)
 
     def set_color(self, obj):
+        if self.painter.color == erase_color:
+            self.erasebtn.state = 'normal'
         self.painter.color = get_color_from_hex(self.painter.color_cycle.next())
 
     def set_erase(self, obj):
